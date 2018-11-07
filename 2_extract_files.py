@@ -45,7 +45,7 @@ def extract_files():
                     src = os.path.join(DATA_DIR, train_or_test, classname, filename)
                     dest = os.path.join(DATA_DIR, train_or_test, classname,
                         filename_no_ext + '-%04d.jpg')
-                    call(["ffmpeg", "-hwaccel", "cuvid", "-i", src, dest])
+                    call(["ffmpeg", "-hwaccel", "cuvid","-i", src, dest])
 
                 # Now get how many frames it is.
                 nb_frames = get_nb_frames_for_video(video_parts)
