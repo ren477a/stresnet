@@ -9,6 +9,8 @@ import random
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
 
+DATA_DIR = '/media/ren/WINDOWS/UCF_Crimes'
+
 class DataSet():
     def __init__(self, num_of_snip=5, opt_flow_len=10, image_shape=(224, 224), class_limit=None):
         """Constructor.
@@ -33,7 +35,7 @@ class DataSet():
     @staticmethod
     def get_data_list():
         """Load our data list from file."""
-        with open(os.path.join('/data', 'data_list.csv'), 'r') as fin:
+        with open(os.path.join('data_file.csv'), 'r') as fin:
             reader = csv.reader(fin)
             data_list = list(reader)
 
@@ -88,14 +90,14 @@ def get_generators(data, image_shape=(224, 224), batch_size=32):
     test_datagen = ImageDataGenerator(rescale=1./255)
 
     train_generator = train_datagen.flow_from_directory(
-            os.path.join('/data', 'train'),
+            os.path.join(DATA_DIR, 'train'),
             target_size=image_shape,
             batch_size=batch_size,
             classes=data.classes,
             class_mode='categorical')
 
     validation_generator = test_datagen.flow_from_directory(
-            os.path.join('/data', 'test'),
+            os.path.join(DATA_DIR, 'test'),
             target_size=image_shape,
             batch_size=batch_size,
             classes=data.classes,

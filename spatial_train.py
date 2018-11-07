@@ -8,6 +8,8 @@ import time
 import os.path
 from os import makedirs
 
+DATA_DIR = '/media/ren/WINDOWS/UCF_Crimes'
+
 def train_model(model, nb_epoch, generators, callbacks=[]):
     train_generator, validation_generator = generators
     model.fit_generator(
@@ -30,7 +32,7 @@ def train(num_of_snip=5, saved_weights=None,
         name_str = time_str
 
     # Callbacks: Save the model.
-    directory1 = os.path.join('out', 'checkpoints', name_str)
+    directory1 = os.path.join(DATA_DIR, 'out', 'checkpoints', name_str)
     if not os.path.exists(directory1):
         os.makedirs(directory1)
         checkpointer = ModelCheckpoint(
@@ -39,7 +41,7 @@ def train(num_of_snip=5, saved_weights=None,
             save_best_only=True)
 
     # Callbacks: TensorBoard
-    directory2 = os.path.join('out', 'TB', name_str)
+    directory2 = os.path.join(DATA_DIR, 'out', 'TB', name_str)
     if not os.path.exists(directory2):
         os.makedirs(directory2)
     tb = TensorBoard(log_dir=os.path.join(directory2))
@@ -48,11 +50,11 @@ def train(num_of_snip=5, saved_weights=None,
     early_stopper = EarlyStopping(monitor='loss', patience=100)
 
     # Callbacks: Save results.
-    directory3 = os.path.join('out', 'logs', name_str)
+    directory3 = os.path.join(DATA_DIR, 'out', 'logs', name_str)
     if not os.path.exists(directory3):
         os.makedirs(directory3)
     timestamp = time.time()
-    csv_logger = CSVLogger(os.path.join(directory3, 'training-' + \
+    csv_logger = CSVLogger(os.path.join(DATA_DIR, directory3, 'training-' + \
         str(timestamp) + '.log'))
 
     print("class_limit = ", class_limit)

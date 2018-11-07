@@ -6,11 +6,12 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.optimizers import SGD, Adam
 from keras.layers.normalization import BatchNormalization
+from keras.applications import ResNet50
 
 # CNN model for the spatial stream
 def get_model(data, weights='imagenet'):
     # create the base pre-trained model
-    base_model = InceptionV3(weights=weights, include_top=False)
+    base_model = ResNet50(weights=weights, include_top=False)
 
     # add a global spatial average pooling layer
     x = base_model.output
