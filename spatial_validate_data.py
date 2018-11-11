@@ -10,6 +10,8 @@ from keras.utils import to_categorical
 from keras.preprocessing.image import ImageDataGenerator
 import cv2
 
+DATA_DIR = '/media/ren/WINDOWS/UCF_Crimes'
+
 class DataSet():
     def __init__(self, class_limit=None, image_shape=(224, 224), original_image_shape=(341, 256), n_snip=5, opt_flow_len=10, batch_size=16):
         """Constructor.
@@ -24,8 +26,8 @@ class DataSet():
         self.opt_flow_len = opt_flow_len
         self.batch_size = batch_size
 
-        self.static_frame_path = os.path.join('/data', 'test')
-        self.opt_flow_path = os.path.join('/data', 'opt_flow')
+        self.static_frame_path = os.path.join(DATA_DIR, 'test')
+        self.opt_flow_path = os.path.join(DATA_DIR, 'opt_flow')
 
         # Get the data.
         self.data_list = self.get_data_list()
@@ -46,7 +48,7 @@ class DataSet():
     @staticmethod
     def get_data_list():
         """Load our data list from file."""
-        with open(os.path.join('/data', 'data_list.csv'), 'r') as fin:
+        with open(os.path.join('data_file.csv'), 'r') as fin:
             reader = csv.reader(fin)
             data_list = list(reader)
 
@@ -102,46 +104,24 @@ class DataSet():
                 test.append(item)
         return train, test
 
-    def validation_generator(self):
-        """Return a generator of optical frame stacks that we can use to test."""
+    def validation_generator(self, image_shape=(224, 224), batch_size=32):
+        test_datagen = ImageDataGenerator(rescale=1./255)
 
-        print("\nCreating validation generator with %d samples.\n" % len(self.data_list))
+        validation_generator = test_datagen.flow_from_directory(
+                os.path.join(DATA_DIR, 'test'),
+                target_size=image_shape,
+                batch_size=batch_size,
+                classes=self.classes,
+                class_mode='categorical')
 
-        idx = 0
-        while 1:
-            idx = idx % self.n_batch
-            print("\nGenerating batch number {0}/{1} ...".format(idx + 1, self.n_batch))
-            idx += 1
-            
-            X_batch = []
-            y_batch = []
-
-            # Get a list of batch-size samples.
-            batch_list = self.data_list[idx * self.batch_size: (idx + 1) * self.batch_size]
-
-            for row in batch_list:
-                # Get the stacked optical flows from disk.
-                X = self.get_static_frame(row)
-                
-                # Get the corresponding labels
-                y = self.get_class_one_hot(row[1])
-                y = np.array(y)
-                y = np.squeeze(y)
-
-                X_batch.append(X)
-                y_batch.append(y)
-
-            X_batch = np.array(X_batch)
-            y_batch = np.array(y_batch)
-
-            yield X_batch, y_batch
+        return validation_generator
 
     def get_static_frame(self, row):
         static_frames = []
 
-        static_frame_dir = os.path.join(self.static_frame_path, row[1], row[2])
-        opt_flow_dir_x = os.path.join(self.opt_flow_path, 'u', row[2])
-        opt_flow_dir_y = os.path.join(self.opt_flow_path, 'v', row[2])
+        static_frame_dir = os.path.join(DATA_DIR, self.static_frame_path, row[1], row[2])
+        opt_flow_dir_x = os.path.join(DATA_DIR, self.opt_flow_path, 'u', row[2])
+        opt_flow_dir_y = os.path.join(DATA_DIR, self.opt_flow_path, 'v', row[2])
 
         # temporal parameters
         total_frames = len(os.listdir(opt_flow_dir_x))

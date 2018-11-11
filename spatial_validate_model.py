@@ -7,6 +7,7 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.optimizers import SGD, Adam
 from keras.layers.normalization import BatchNormalization
+from keras.applications import ResNet50
 
 class ResearchModels():
     def __init__(self, nb_classes, n_snip, opt_flow_len, image_shape = (224, 224), saved_weights=None):
@@ -53,8 +54,8 @@ class ResearchModels():
     # CNN model for the spatial stream
     def cnn_spatial(self, weights='imagenet'):
         # create the base pre-trained model
-        base_model = InceptionV3(weights=weights, include_top=False)
-    
+        base_model = ResNet50(weights=weights, include_top=False)
+
         # add a global spatial average pooling layer
         x = base_model.output
         x = GlobalAveragePooling2D()(x)
@@ -62,7 +63,7 @@ class ResearchModels():
         x = Dense(1024, activation='relu')(x)
         # and a logistic layer
         predictions = Dense(self.nb_classes, activation='softmax')(x)
-    
+
         # this is the model we will train
         model = Model(inputs=base_model.input, outputs=predictions)
 

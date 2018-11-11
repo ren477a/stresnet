@@ -2,10 +2,12 @@
 Train our temporal-stream CNN on optical flow frames.
 """
 from spatial_validate_model import ResearchModels
-from spatial_validate_data import DataSet, keras_validation_generator
+from spatial_validate_data import DataSet#, keras_validation_generator
 import time
 import os.path
 from os import makedirs
+
+DATA_DIR = '/media/ren/WINDOWS/UCF_Crimes'
 
 def test_1epoch(class_limit=None, n_snip=5, opt_flow_len=10, image_shape=(224, 224), original_image_shape=(341, 256), batch_size=16, saved_weights=None):
 
@@ -33,12 +35,12 @@ def main():
 
     """These are the main training settings. Set each before running this file."""
     "=============================================================================="
-    saved_weights = None # weights file
+    saved_weights = os.path.join(DATA_DIR, 'out','checkpoints', '1811071348', '005-4.043.hdf5') #None # weights file
     class_limit = None  # int, can be 1-101 or None
     n_snip = 1 # number of chunks from each video used for testing
     opt_flow_len = 10 # number of optical flow frames used
     image_shape = (224, 224)
-    batch_size = 1024
+    batch_size = 32
     "=============================================================================="
 
     test_1epoch(class_limit=class_limit, n_snip=n_snip, opt_flow_len=opt_flow_len, image_shape=image_shape, batch_size=batch_size, saved_weights=saved_weights)

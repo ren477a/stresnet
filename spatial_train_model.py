@@ -33,23 +33,29 @@ def freeze_all_but_top(model):
         layer.trainable = False
 
     # compile the model (should be done *after* setting layers to non-trainable)
-    model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+    # 0.001 default lr
+    model.compile(optimizer=Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
 
-def freeze_all_but_mid_and_top(model):
+def freeze_all_but_mid_and_top(model, learning_rate):
     """After we fine-tune the dense layers, train deeper."""
     # we chose to train the top 2 inception blocks, i.e. we will freeze
     # the first 172 layers and unfreeze the rest:
-    for layer in model.layers[:172]:
+    # model.summary()
+    # print("SUMMARY")
+    # -36 First res block
+    # -36-61 Second res
+    for layer in model.layers[:-36-61]:
         layer.trainable = False
-    for layer in model.layers[172:]:
+    for layer in model.layers[-36:-61]:
         layer.trainable = True
 
     # we need to recompile the model for these modifications to take effect
     # we use SGD with a low learning rate
     model.compile(
-        optimizer=SGD(lr=0.0001, momentum=0.9),
+        # default lr = 0.0001
+        optimizer=SGD(lr=learning_rate, momentum=0.9),
         loss='categorical_crossentropy',
         metrics=['accuracy', 'top_k_categorical_accuracy'])
 

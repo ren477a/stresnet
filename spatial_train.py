@@ -23,7 +23,7 @@ def train_model(model, nb_epoch, generators, callbacks=[]):
 
 def train(num_of_snip=5, saved_weights=None,
         class_limit=None, image_shape=(224, 224),
-        load_to_memory=False, batch_size=32, nb_epoch=100, name_str=None):
+        load_to_memory=False, batch_size=32, nb_epoch=100, name_str=None, learning_rate=0.0001):
 
     # Get local time.
     time_str = time.strftime("%y%m%d%H%M", time.localtime())
@@ -85,8 +85,9 @@ def train(num_of_snip=5, saved_weights=None,
         model.load_weights(saved_weights)
 
     print("Get and train the mid layers...")
-    model = freeze_all_but_mid_and_top(model)
-    model = train_model(model, 10, generators, [tb, early_stopper, csv_logger, checkpointer])
+    model = freeze_all_but_mid_and_top(model, learning_rate)
+    # 10
+    model = train_model(model, nb_epoch, generators, [tb, early_stopper, csv_logger, checkpointer])
 
 def main():
     """These are the main training settings. Set each before running
@@ -97,15 +98,24 @@ def main():
     num_of_snip = 1 # number of chunks used for each video
     image_shape=(224, 224)
     load_to_memory = False  # pre-load the sequencea in,o memory
-    batch_size = 512
-    nb_epoch = 500
-    name_str = None
+    batch_size = [32, 64, 128,] # 512
+    nb_epoch = 30
+    name_str = None # None
+    learning_rates = [0.0001, 0.00005, 0.00001,]
+    """
+    Try:
+        Freeze another block
+        Half the learning rate add more epoch
+        Double the learning rate
+    """
     "=============================================================================="
-
-    train(num_of_snip=num_of_snip, saved_weights=saved_weights,
-            class_limit=class_limit, image_shape=image_shape,
-            load_to_memory=load_to_memory, batch_size=batch_size,
-            nb_epoch=nb_epoch, name_str=name_str)
+    for bs in batch_size:
+        for lr in learning_rates:
+            name = 'bs-{}-lr-{}'.format(bs, lr)
+            train(num_of_snip=num_of_snip, saved_weights=saved_weights,
+                    class_limit=class_limit, image_shape=image_shape,
+                    load_to_memory=load_to_memory, batch_size=bs,
+                    nb_epoch=nb_epoch, name_str=name_str, learning_rate=lr)
 
 if __name__ == '__main__':
     main()
