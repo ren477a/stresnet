@@ -98,10 +98,10 @@ def main():
     num_of_snip = 1 # number of chunks used for each video
     image_shape=(224, 224)
     load_to_memory = False  # pre-load the sequencea in,o memory
-    batch_size = [32, 64, 128,] # 512
+    batch_size = [64, 128,] # 512
     nb_epoch = 30
     name_str = None # None
-    learning_rates = [0.0001, 0.00005, 0.00001,]
+    learning_rates = [0.0001, 0.00005, ]
     """
     Try:
         Freeze another block
@@ -115,7 +115,7 @@ def main():
             train(num_of_snip=num_of_snip, saved_weights=saved_weights,
                     class_limit=class_limit, image_shape=image_shape,
                     load_to_memory=load_to_memory, batch_size=bs,
-                    nb_epoch=nb_epoch, name_str=name_str, learning_rate=lr)
+                    nb_epoch=nb_epoch, name_str=name, learning_rate=lr)
 
 if __name__ == '__main__':
     main()

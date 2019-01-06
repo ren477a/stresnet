@@ -48,7 +48,7 @@ def freeze_all_but_mid_and_top(model, learning_rate):
     # -36-61 Second res
     for layer in model.layers[:-36-61]:
         layer.trainable = False
-    for layer in model.layers[-36:-61]:
+    for layer in model.layers[-36-61:]:
         layer.trainable = True
 
     # we need to recompile the model for these modifications to take effect
